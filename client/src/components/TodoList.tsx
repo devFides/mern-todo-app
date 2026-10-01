@@ -4,7 +4,7 @@ import TodoItem from "./TodoItem";
 interface TodoListProps {
   todos: Todo[];
   onToggle: (id: string) => Promise<void>;
-  onUpdate: (id: string, payload: TodoPayload) => Promise<void>;
+  onUpdate: (id: string, payload: TodoPayload) => Promise<boolean>;
   onDelete: (id: string) => Promise<void>;
 }
 

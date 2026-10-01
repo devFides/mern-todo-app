@@ -1,29 +1,33 @@
 import { useState } from "react";
 import type { Todo, TodoPayload } from "../interfaces/todo";
 import TodoForm from "./TodoForm";
+import ConfirmDialog from "./ConfirmDialog";
 
 interface TodoItemProps {
   todo: Todo;
   onToggle: (id: string) => Promise<void>;
-  onUpdate: (id: string, payload: TodoPayload) => Promise<void>;
+  onUpdate: (id: string, payload: TodoPayload) => Promise<boolean>;
   onDelete: (id: string) => Promise<void>;
 }
 
 function TodoItem({ todo, onToggle, onUpdate, onDelete }: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleSave = async (payload: TodoPayload) => {
-    await onUpdate(todo._id, payload);
-    setIsEditing(false);
+    const success = await onUpdate(todo._id, payload);
+    if (success) setIsEditing(false);
+    return success;
   };
 
   const handleConfirmDelete = () => {
+    setShowConfirm(false);
     onDelete(todo._id);
   };
 
   if (isEditing) {
     return (
-      <li className="bg-gray-800 p-4 shadow-sm">
+      <li className="animate-fade-in bg-gray-800 p-4 shadow-sm">
         <TodoForm
           initialValues={{ title: todo.title, description: todo.description }}
           submitLabel="Save"
@@ -35,7 +39,7 @@ function TodoItem({ todo, onToggle, onUpdate, onDelete }: TodoItemProps) {
   }
 
   return (
-    <li className="flex items-start gap-3 bg-gray-800 p-4 shadow-sm">
+    <li className="flex animate-fade-in items-start gap-3 bg-gray-800 p-4 shadow-sm">
       <button
         type="button"
         role="checkbox"
@@ -64,9 +68,19 @@ function TodoItem({ todo, onToggle, onUpdate, onDelete }: TodoItemProps) {
       </button>
 
       <div className="min-w-0 flex-1">
-        <h3 className="break-words font-medium text-gray-100">{todo.title}</h3>
+        <h3
+          className={`break-words font-medium ${
+            todo.done ? "text-gray-400 line-through" : "text-gray-100"
+          }`}
+        >
+          {todo.title}
+        </h3>
         {todo.description && (
-          <p className="mt-1 break-words text-sm text-gray-500">
+          <p
+            className={`mt-1 break-words text-sm ${
+              todo.done ? "text-gray-300 line-through" : "text-gray-500"
+            }`}
+          >
             {todo.description}
           </p>
         )}
@@ -83,7 +97,7 @@ function TodoItem({ todo, onToggle, onUpdate, onDelete }: TodoItemProps) {
         </button>
         <button
           type="button"
-          onClick={handleConfirmDelete}
+          onClick={() => setShowConfirm(true)}
           aria-label={`Delete "${todo.title}"`}
           title="Delete"
           className="px-1 cursor-pointer"
@@ -91,6 +105,13 @@ function TodoItem({ todo, onToggle, onUpdate, onDelete }: TodoItemProps) {
           🗑️
         </button>
       </div>
+      <ConfirmDialog
+        open={showConfirm}
+        title="Delete TODO"
+        message={`Delete "${todo.title}"? This can't be undone.`}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setShowConfirm(false)}
+      />
     </li>
   );
 }
