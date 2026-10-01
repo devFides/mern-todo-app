@@ -7,39 +7,45 @@ const getTodos = async (req, res) => {
 
 const createTodo = async (req, res) => {
   const { title, description } = req.body;
-  const todo = await Todo.create({ title, description });
-  res.status(201).json(todo);
+  const todo = await Todo.create({
+    title: title.trim(),
+    description: description?.trim(),
+  });
+  return res.status(201).json(todo);
 };
 
 const updateTodo = async (req, res) => {
   const { title, description } = req.body;
-  const todo = await Todo.findByIdAndUpdate(
-    req.params.id,
-    { title, description },
-    { returnDocument: "after", runValidators: true },
-  );
+  const updates = {};
+  if (title !== undefined) updates.title = title.trim();
+  if (description !== undefined) updates.description = description.trim();
+
+  const todo = await Todo.findByIdAndUpdate(req.params.id, updates, {
+    returnDocument: "after",
+    runValidators: true,
+  });
   if (!todo) {
-    res.status(404).json({ message: "Todo not found" });
+    return res.status(404).json({ message: "Todo not found" });
   }
-  res.json(todo);
+  return res.json(todo);
 };
 
 const toggleTodoDone = async (req, res) => {
   const todo = await Todo.findById(req.params.id);
   if (!todo) {
-    res.status(404).json({ message: "Todo not found" });
+    return res.status(404).json({ message: "Todo not found" });
   }
   todo.done = !todo.done;
   await todo.save();
-  res.json(todo);
+  return res.json(todo);
 };
 
 const deleteTodo = async (req, res) => {
   const todo = await Todo.findByIdAndDelete(req.params.id);
   if (!todo) {
-    res.status(404).json({ message: "Todo not found" });
+    return res.status(404).json({ message: "Todo not found" });
   }
-  res.json({ message: "Todo deleted", id: req.params.id });
+  return res.json({ message: "Todo deleted", id: req.params.id });
 };
 
 module.exports = {
