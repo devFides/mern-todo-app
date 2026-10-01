@@ -1,1 +1,16 @@
 @import "tailwindcss";
+input::placeholder,
+textarea::placeholder {
+  color: #ececec;
+  opacity: 1;
+  font-weight: 100;
+}
+.bg-orange {
+  background-color: #ff7360;
+}
+.border-orange {
+  border-color: #ff7360;
+}
+.text-orange {
+  color: #ff7360;
+}
