@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
-const TITLE_MAX_LENGTH = 5;
-const DESCRIPTION_MAX_LENGTH = 5;
+const TITLE_MAX_LENGTH = 100;
+const DESCRIPTION_MAX_LENGTH = 500;
 
 const titleError = (title) => {
   if (typeof title !== "string" || !title.trim()) {

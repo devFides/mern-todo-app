@@ -1,6 +1,6 @@
 //Should match with the backend character limits
-export const TITLE_MAX_LENGTH = 5;
-export const DESCRIPTION_MAX_LENGTH = 5;
+export const TITLE_MAX_LENGTH = 100;
+export const DESCRIPTION_MAX_LENGTH = 500;
 
 export interface TodoFormErrors {
   title?: string;
